@@ -61,10 +61,18 @@ def create_schema():
 
 def fill():
     print('Completemos esta tablita!')
-    # Llenar la tabla de la secundaria con al munos 2 tutores
+    # Llenar la tabla de la secundaria con al menos 2 tutores
     # Cada tutor tiene los campos:
     # id --> este campo es auto incremental por lo que no deberá completarlo
     # name --> El nombre del tutor (puede ser solo nombre sin apellido)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    tutores = Tutor[('Marcelo'),
+                    ('Gabriel')]
+    session.add(tutores)
+    session.commit()
+    print(tutores)
 
     # Llenar la tabla de la secundaria con al menos 5 estudiantes
     # Cada estudiante tiene los posibles campos:
@@ -73,6 +81,14 @@ def fill():
     # age --> cuantos años tiene el estudiante
     # grade --> en que año de la secundaria se encuentra (1-6)
     # tutor --> el tutor de ese estudiante (el objeto creado antes)
+    estudiantes = Estudiante[('Lucas', 18, 4, 'Gabriel'),
+                            ('Tato', 23, 6, 'Marcelo'),
+                            ('Nacho', 17, 2, 'Gabriel'),
+                            ('Tute', 16, 3, 'Marcelo'),
+                            ('Micaela', 20, 5, 'Marcelo')]
+    session.add(estudiantes)
+    session.commit()
+    print(estudiantes)
 
     # No olvidarse que antes de poder crear un estudiante debe haberse
     # primero creado el tutor.
