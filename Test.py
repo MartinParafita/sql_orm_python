@@ -106,8 +106,9 @@ def search_by_tutor(tutor):
     # aquellos estudiantes que tengan asignado dicho tutor.
     Session = sessionmaker(bind=engine)
     session = Session()
-    query = session.query(Estudiante).join(Estudiante.tutor_id).filter(Tutor.name == tutor)
-    print(query)
+    query = session.query(Estudiante).join(Estudiante.tutor).filter(Tutor.name == tutor)
+    for i in query:
+        print(i)
     # Para poder realizar esta query debe usar join, ya que
     # deberá crear la query para la tabla estudiante pero
     # buscar por la propiedad de tutor.name
@@ -115,25 +116,30 @@ def search_by_tutor(tutor):
     
 
 
-def modify(id, name):
+def modify(id, nuevo_tutor):
     print('Modificando la tabla')
     # Deberá actualizar el tutor de un estudiante, cambiarlo para eso debe
     # 1) buscar con una query el tutor por "tutor.name" usando name
     # pasado como parámetro y obtener el objeto del tutor
     Session = sessionmaker(bind=engine)
     session = Session()
-    tutorname = session.query(Tutor).filter(Tutor.name == name)
-    tutorname = tutorname.first()
-    print(tutorname)
+    query = session.query(Tutor).filter(Tutor.name == nuevo_tutor)
+    tutorname = query.first()
+    
     # 2) buscar con una query el estudiante por "estudiante.id" usando
     # el id pasado como parámetro
-    alumno = session.query(Estudiante).filter(Estudiante.id == id)
-    print('Los alumnos a cargo del tutor son: ', alumno)
+    query = session.query(Estudiante).filter(Estudiante.id == id)
+    alumno = query.first()
+    
+    alumno.tutor = tutorname
     # 3) actualizar el objeto de tutor del estudiante con el obtenido
     # en el punto 1 y actualizar la base de datos
-    actualiza = session.query(Tutor).filter(Tutor.name == name).update({Tutor.name: nuevo_tutor})
-    session.add(actualiza)
+    
+    session.add(alumno)
     session.commit()
+    
+        
+    print("Estudiante con id {} fue actualizado, el nuevo tutor es {}".format(id, nuevo_tutor))
     # TIP: En clase se hizo lo mismo para las nacionalidades con
     # en la función update_persona_nationality
 
@@ -146,7 +152,7 @@ def count_grade(grade):
     Session = sessionmaker(bind=engine)
     session = Session()
     resultado = session.query(Estudiante).filter(Estudiante.grade == grade).count()
-    print(resultado)
+    print('La cantidad de cursantes del grado {} son: '.format(grade),resultado)
     # TIP: En clase se hizo lo mismo para las nacionalidades con
     # en la función count_persona
 
@@ -162,10 +168,10 @@ if __name__ == '__main__':
     # search_by_tutor(tutor)
     search_by_tutor(tutor)
     
-    nuevo_tutor = 'Silvia'
+    nuevo_tutor = 'Gabriel'
     id = 2
     # modify(id, nuevo_tutor)
-    modify(id, name)
+    modify(id, nuevo_tutor)
 
     grade = 2
     # count_grade(grade)
